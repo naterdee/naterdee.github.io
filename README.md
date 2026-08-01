@@ -2,11 +2,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>US Wildfire Trends & Causes — Drill-Down Story</title>
+  <title>US Wildfires — Narrative Drill-Down</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       max-width: 900px;
       margin: 40px auto;
       padding: 0 20px;
@@ -14,28 +14,23 @@
       background-color: #f8f9fa;
     }
 
-    header {
-      margin-bottom: 24px;
+    header { margin-bottom: 20px; }
+    h1 { margin: 0 0 8px 0; font-size: 1.8rem; }
+    
+    /* Narrative Scene Description & Annotation Styling */
+    .scene-narrative {
+      background: #eef2f5;
+      border-left: 4px solid #e63946;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border-radius: 0 6px 6px 0;
+      min-height: 48px;
     }
+    .scene-title { font-weight: 700; margin-bottom: 4px; color: #1d3557; }
+    .scene-annotation { font-size: 0.95rem; color: #457b9d; margin: 0; }
 
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: 1.8rem;
-    }
-
-    p.description {
-      margin: 0;
-      color: #6c757d;
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
+    /* Controls (Triggers UI) */
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn {
       padding: 10px 16px;
       border: 1px solid #ced4da;
@@ -46,17 +41,10 @@
       font-size: 0.9rem;
       transition: all 0.2s ease;
     }
+    .btn:hover { background: #e9ecef; }
+    .btn.active { background: #e63946; color: white; border-color: #e63946; }
 
-    .btn:hover {
-      background: #e9ecef;
-    }
-
-    .btn.active {
-      background: #e63946;
-      color: white;
-      border-color: #e63946;
-    }
-
+    /* Chart Container */
     #chart-container {
       background: white;
       border-radius: 8px;
@@ -64,7 +52,12 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       position: relative;
     }
+    .axis text { font-size: 0.8rem; fill: #6c757d; }
+    .legend { display: flex; gap: 16px; justify-content: center; margin-top: 16px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+    .legend-color { width: 12px; height: 12px; border-radius: 2px; }
 
+    /* Tooltip */
     .tooltip {
       position: absolute;
       padding: 8px 12px;
@@ -76,48 +69,26 @@
       opacity: 0;
       transition: opacity 0.15s ease;
     }
-
-    .axis text {
-      font-size: 0.8rem;
-      color: #6c757d;
-    }
-
-    .legend {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
-
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>US Wildfire Trends & Causes (2010–2023)</h1>
-    <p class="description">
-      Explore how wildfire frequency and severity have evolved over the last decade. Click a storyline below to drill down into key drivers.
-    </p>
   </header>
 
+  <!-- PARAMETER TRIGGER CONTROLS -->
   <div class="controls">
-    <button class="btn active" onclick="switchView('overview')">Overview: Total Acres</button>
-    <button class="btn" onclick="switchView('cause')">Drill Down: By Cause</button>
-    <button class="btn" onclick="switchView('region')">Drill Down: By Region</button>
-    <button class="btn" onclick="switchView('size')">Drill Down: By Size Class</button>
+    <button class="btn active" id="btn-overview">Overview: Total Acres</button>
+    <button class="btn" id="btn-cause">Drill Down: By Cause</button>
+    <button class="btn" id="btn-region">Drill Down: By Region</button>
+    <button class="btn" id="btn-size">Drill Down: By Size Class</button>
+  </div>
+
+  <!-- SCENE ANNOTATION CONTAINER -->
+  <div class="scene-narrative">
+    <div id="scene-title" class="scene-title"></div>
+    <p id="scene-annotation" class="scene-annotation"></p>
   </div>
 
   <div id="chart-container">
@@ -127,7 +98,9 @@
   </div>
 
   <script>
-    // --- 1. Dataset (Synthetic structured data matching US Forest Service patterns) ---
+    // =========================================================================
+    // 1. DATASET
+    // =========================================================================
     const wildfireData = [
       { year: 2010, acres: 3.4, human: 1.9, natural: 1.5, west: 2.1, southwest: 1.3, megaFires: 1.8, standardFires: 1.6 },
       { year: 2011, acres: 8.7, human: 5.2, natural: 3.5, west: 3.2, southwest: 5.5, megaFires: 6.1, standardFires: 2.6 },
@@ -145,7 +118,55 @@
       { year: 2023, acres: 2.6, human: 1.4, natural: 1.2, west: 1.7, southwest: 0.9, megaFires: 1.2, standardFires: 1.4 }
     ];
 
-    // --- 2. Chart Setup ---
+    // =========================================================================
+    // 2. PARAMETERS (GLOBAL STATE)
+    // =========================================================================
+    const state = {
+      activeSceneId: "overview", // Active scene identifier
+      animationDuration: 850     // Standard transition timing (ms)
+    };
+
+    // =========================================================================
+    // 3. SCENES & ANNOTATIONS SPECIFICATION
+    // =========================================================================
+    const scenes = {
+      overview: {
+        id: "overview",
+        title: "Overview — Annual Acreage Trends",
+        annotation: "Wildfire destruction peaked heavily in 2015, 2017, and 2020, each exceeding 10 million acres burned nationwide.",
+        keys: ["acres"],
+        colors: ["#e63946"],
+        labels: ["Total Acres Burned"]
+      },
+      cause: {
+        id: "cause",
+        title: "Drill Down — Human vs. Natural Causes",
+        annotation: "Human ignition accounts for over 50% of burned acreage on average, but lightning-driven natural fires account for massive single-year spikes.",
+        keys: ["human", "natural"],
+        colors: ["#d62828", "#f77f00"],
+        labels: ["Human Caused", "Natural (Lightning)"]
+      },
+      region: {
+        id: "region",
+        title: "Drill Down — Pacific West vs. Southwest",
+        annotation: "The Pacific West experiences severe wildfire seasons consistently, whereas the Southwest experiences extreme, concentrated peak events (e.g., 2011).",
+        keys: ["west", "southwest"],
+        colors: ["#457b9d", "#2a9d8f"],
+        labels: ["Pacific West", "Southwest"]
+      },
+      size: {
+        id: "size",
+        title: "Drill Down — Mega-Fires vs. Standard Fires",
+        annotation: "While small fires make up 98% of total fire counts, 'Mega-Fires' (>100k acres) account for nearly 80% of all burned acreage in bad years.",
+        keys: ["megaFires", "standardFires"],
+        colors: ["#6a040f", "#e9c46a"],
+        labels: ["Mega-Fires (>100k acres)", "Standard Fires (<100k acres)"]
+      }
+    };
+
+    // =========================================================================
+    // 4. CHART CANVAS SETUP
+    // =========================================================================
     const margin = { top: 30, right: 30, bottom: 40, left: 50 };
     const width = 850 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -156,7 +177,6 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Scales & Axes
     const xScale = d3.scaleBand()
       .domain(wildfireData.map(d => d.year))
       .range([0, width])
@@ -166,16 +186,15 @@
       .domain([0, 12])
       .range([height, 0]);
 
-    const xAxis = svg.append("g")
+    svg.append("g")
       .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(xScale));
 
-    const yAxis = svg.append("g")
+    svg.append("g")
       .attr("class", "axis y-axis")
       .call(d3.axisLeft(yScale).ticks(6).tickFormat(d => d + "M"));
 
-    // Y-Axis Label
     svg.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", -40)
@@ -187,31 +206,31 @@
 
     const tooltip = d3.select("#tooltip");
 
-    // Color Configurations
-    const colorConfigs = {
-      overview: { keys: ["acres"], colors: ["#e63946"], labels: ["Total Acres Burned"] },
-      cause: { keys: ["human", "natural"], colors: ["#d62828", "#f77f00"], labels: ["Human Caused", "Natural (Lightning)"] },
-      region: { keys: ["west", "southwest"], colors: ["#457b9d", "#2a9d8f"], labels: ["Pacific West", "Southwest"] },
-      size: { keys: ["megaFires", "standardFires"], colors: ["#6a040f", "#e9c46a"], labels: ["Mega-Fires (>100k acres)", "Standard Fires (<100k acres)"] }
-    };
+    // =========================================================================
+    // 5. ANIMATIONS & SCENE RENDERER
+    // =========================================================================
+    function renderScene(sceneId) {
+      const scene = scenes[sceneId];
 
-    // --- 3. Render / Update Function ---
-    function updateChart(viewType) {
-      const config = colorConfigs[viewType];
-      
-      // Prepare Stacked Data
-      const stack = d3.stack().keys(config.keys);
+      // A. Update Scene Annotations (Text DOM)
+      d3.select("#scene-title").text(scene.title);
+      d3.select("#scene-annotation").text(scene.annotation);
+
+      // B. Compute Stacked Layout for the active scene parameters
+      const stack = d3.stack().keys(scene.keys);
       const series = stack(wildfireData);
+      const colorScale = d3.scaleOrdinal().domain(scene.keys).range(scene.colors);
 
-      const colorScale = d3.scaleOrdinal()
-        .domain(config.keys)
-        .range(config.colors);
-
-      // Bind Groups for each Stack Layer
+      // C. Bind Layers (Groups) with Scene Key
       const layers = svg.selectAll(".layer")
         .data(series, d => d.key);
 
-      layers.exit().remove();
+      // Animation: Fade out old layers
+      layers.exit()
+        .transition()
+        .duration(state.animationDuration / 2)
+        .style("opacity", 0)
+        .remove();
 
       const layersEnter = layers.enter()
         .append("g")
@@ -220,12 +239,13 @@
 
       const mergedLayers = layersEnter.merge(layers);
 
-      // Bind Rectangles
+      // D. Bind Rectangles inside Layers
       const rects = mergedLayers.selectAll("rect")
         .data(d => d);
 
       rects.exit().remove();
 
+      // Animation: Morph rectangle heights & positions smoothly
       rects.enter()
         .append("rect")
           .attr("x", d => xScale(d.data.year))
@@ -244,33 +264,49 @@
         })
         .on("mouseout", () => tooltip.style("opacity", 0))
         .transition()
-        .duration(750)
+        .duration(state.animationDuration)
+        .ease(d3.easeCubicInOut)
           .attr("x", d => xScale(d.data.year))
           .attr("y", d => yScale(d[1]))
           .attr("height", d => yScale(d[0]) - yScale(d[1]));
 
-      // Update Legend
+      // E. Update Legend Output
       const legendContainer = d3.select("#legend");
       legendContainer.html("");
-      
-      config.labels.forEach((label, i) => {
+      scene.labels.forEach((label, i) => {
         const item = legendContainer.append("div").attr("class", "legend-item");
         item.append("div")
           .attr("class", "legend-color")
-          .style("background-color", config.colors[i]);
+          .style("background-color", scene.colors[i]);
         item.append("span").text(label);
       });
     }
 
-    // Controls Handling
-    function switchView(viewType) {
-      d3.selectAll(".btn").classed("active", false);
-      event.target.classList.add("active");
-      updateChart(viewType);
+    // =========================================================================
+    // 6. TRIGGERS & EVENT LISTENERS
+    // =========================================================================
+    function setTrigger(buttonId, sceneId) {
+      d3.select(buttonId).on("click", function(event) {
+        // 1. Mutate state parameter
+        state.activeSceneId = sceneId;
+
+        // 2. Update Trigger UI state
+        d3.selectAll(".btn").classed("active", false);
+        d3.select(this).classed("active", true);
+
+        // 3. Trigger Scene Render & Transition
+        renderScene(state.activeSceneId);
+      });
     }
 
-    // Initial Render
-    updateChart('overview');
+    // Bind triggers to controls
+    setTrigger("#btn-overview", "overview");
+    setTrigger("#btn-cause", "cause");
+    setTrigger("#btn-region", "region");
+    setTrigger("#btn-size", "size");
+
+    // Initial Trigger Execution
+    renderScene(state.activeSceneId);
   </script>
 </body>
 </html>
