@@ -69,6 +69,17 @@
       opacity: 0;
       transition: opacity 0.15s ease;
     }
+    .annotation-line {
+      stroke: #d62828;
+      stroke-width: 1.5px;
+      stroke-dasharray: 3 3;
+    }
+    .annotation-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+      fill: #d62828;
+      text-anchor: middle;
+    }
   </style>
 </head>
 <body>
@@ -132,8 +143,8 @@
     const scenes = {
       overview: {
         id: "overview",
-        title: "Overview — Annual Acreage Trends",
-        annotation: "Wildfire destruction peaked heavily in 2015, 2017, and 2020, each exceeding 10 million acres burned nationwide.",
+        title: "Annual Acreage Trends",
+        annotation: "Wildfire destruction peaked heavily in 2015, 2017, and 2020, with each of these years having over 10 million acres of land burned nationwide.",
         keys: ["acres"],
         colors: ["#e63946"],
         labels: ["Total Acres Burned"]
@@ -177,6 +188,18 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    svg.append("defs").append("marker")
+      .attr("id", "arrowhead")
+      .attr("viewBox", "0 0 10 10")
+      .attr("refX", 5)
+      .attr("refY", 5)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto-start-reverse")
+      .append("path")
+        .attr("d", "M 0 0 L 10 5 L 0 10 z")
+        .attr("fill", "#d62828");
+
     const xScale = d3.scaleBand()
       .domain(wildfireData.map(d => d.year))
       .range([0, width])
@@ -203,6 +226,8 @@
       .style("font-size", "0.8rem")
       .style("fill", "#6c757d")
       .text("Acres Burned (Millions)");
+
+    const annotationGroup = svg.append("g").attr("class", "annotation-group");
 
     const tooltip = d3.select("#tooltip");
 
@@ -280,6 +305,7 @@
           .style("background-color", scene.colors[i]);
         item.append("span").text(label);
       });
+      updateAnnotations(sceneId);
     }
 
     // =========================================================================
@@ -299,6 +325,37 @@
       });
     }
 
+    function updateAnnotations(sceneId) {
+      annotationGroup.selectAll("*").remove();
+
+      if (sceneId === "overview") {
+        const peakYears = [2015, 2017, 2020];
+
+        peakYears.forEach(year => {
+          const dataItem = wildfireData.find(d => d.year === year);
+          if (!dataItem) return;
+
+          const xPos = xScale(year) + xScale.bandwidth() / 2;
+          const yPosBar = yScale(dataItem.acres);
+          const yPosArrowStart = yPosBar - 25;
+
+          annotationGroup.append("line")
+            .attr("class", "annotation-line")
+            .attr("x1", xPos)
+            .attr("y1", yPosArrowStart)
+            .attr("x2", xPos)
+            .attr("y2", yPosBar - 4)
+            .attr("marker-end", "url(#arrowhead)");
+
+          annotationGroup.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", xPos)
+            .attr("y", yPosArrowStart - 5)
+            .text("Peak Year");
+        });
+      }
+    }
+
     // Bind triggers to controls
     setTrigger("#btn-overview", "overview");
     setTrigger("#btn-cause", "cause");
@@ -307,6 +364,8 @@
 
     // Initial Trigger Execution
     renderScene(state.activeSceneId);
+
+    
   </script>
 </body>
 </html>
