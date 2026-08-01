@@ -90,10 +90,10 @@
 
   <!-- PARAMETER TRIGGER CONTROLS -->
   <div class="controls">
-    <button class="btn active" id="btn-overview">Overview: Total Acres</button>
-    <button class="btn" id="btn-cause">Drill Down: By Cause</button>
-    <button class="btn" id="btn-region">Drill Down: By Region</button>
-    <button class="btn" id="btn-size">Drill Down: By Size Class</button>
+    <button class="btn active" id="btn-overview">Overview</button>
+    <button class="btn" id="btn-cause">Causes</button>
+    <button class="btn" id="btn-region">Regions</button>
+    <button class="btn" id="btn-size">Size Classes</button>
   </div>
 
   <!-- SCENE ANNOTATION CONTAINER -->
