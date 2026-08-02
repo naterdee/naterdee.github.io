@@ -93,7 +93,6 @@
     <button class="btn active" id="btn-overview">Overview</button>
     <button class="btn" id="btn-cause">Causes</button>
     <button class="btn" id="btn-region">Regions</button>
-    <button class="btn" id="btn-size">Size Classes</button>
   </div>
 
   <!-- SCENE ANNOTATION CONTAINER -->
@@ -164,14 +163,6 @@
         keys: ["west", "southwest"],
         colors: ["#457b9d", "#2a9d8f"],
         labels: ["Pacific West", "Southwest"]
-      },
-      size: {
-        id: "size",
-        title: "Mega-Fires vs. Standard Fires",
-        annotation: "While small fires make up 98% of total fire counts, 'Mega-Fires' (>100k acres) account for nearly 80% of all burned acreage in bad years.",
-        keys: ["megaFires", "standardFires"],
-        colors: ["#6a040f", "#e9c46a"],
-        labels: ["Mega-Fires (>100k acres)", "Standard Fires (<100k acres)"]
       }
     };
 
@@ -379,7 +370,36 @@
             .attr("class", "annotation-text")
             .attr("x", xPos)
             .attr("y", yPosArrowStart - 5)
-            .text("Like here!");
+            .text("Peak Year");
+        });
+      }
+      if (sceneId === "cause") {
+        const peakYears = [2015, 2017];
+
+        
+        peakYears.forEach(year => {
+          const dataItem = wildfireData.find(d => d.year === year);
+          if (!dataItem) return;
+
+          const xPos = xScale(year) + xScale.bandwidth() / 2;
+          const yPosBar = yScale(dataItem.acres);
+          const yPosArrowStart = yPosBar - 25;
+
+          // Draw Arrowed Line pointing down to top of bar
+          annotationGroup.append("line")
+            .attr("class", "annotation-line")
+            .attr("x1", xPos)
+            .attr("y1", yPosArrowStart)
+            .attr("x2", xPos)
+            .attr("y2", yPosBar - 4)
+            .attr("marker-end", "url(#arrowhead)");
+
+          // Text label above arrow
+          annotationGroup.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", xPos)
+            .attr("y", yPosArrowStart - 5)
+            .text("Lightning Peak");
         });
       }
     }
