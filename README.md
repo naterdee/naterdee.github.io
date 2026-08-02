@@ -143,7 +143,7 @@
     const scenes = {
       overview: {
         id: "overview",
-        title: "Annual Acreage Trends",
+        title: "Annual Acres Burned",
         annotation: "Wildfire destruction peaked heavily in 2015, 2017, and 2020, with each of these years having over 10 million acres of land burned nationwide.",
         keys: ["acres"],
         colors: ["#e63946"],
@@ -151,23 +151,23 @@
       },
       cause: {
         id: "cause",
-        title: "Drill Down — Human vs. Natural Causes",
-        annotation: "Human ignition accounts for over 50% of burned acreage on average, but lightning-driven natural fires account for massive single-year spikes.",
+        title: "Human vs. Natural Causes",
+        annotation: "Human ignition accounts for over 50% of acres burned on average, but lightning generally accounts for most of the massive spikes.",
         keys: ["human", "natural"],
         colors: ["#d62828", "#f77f00"],
         labels: ["Human Caused", "Natural (Lightning)"]
       },
       region: {
         id: "region",
-        title: "Drill Down — Pacific West vs. Southwest",
-        annotation: "The Pacific West experiences severe wildfire seasons consistently, whereas the Southwest experiences extreme, concentrated peak events (e.g., 2011).",
+        title: "Pacific West vs. Southwest",
+        annotation: "While the Pacific West experiences severe wildfire seasons consistently, the Southwest typically doesn't. Instead, they have rare peak events such as in 2011.",
         keys: ["west", "southwest"],
         colors: ["#457b9d", "#2a9d8f"],
         labels: ["Pacific West", "Southwest"]
       },
       size: {
         id: "size",
-        title: "Drill Down — Mega-Fires vs. Standard Fires",
+        title: "Mega-Fires vs. Standard Fires",
         annotation: "While small fires make up 98% of total fire counts, 'Mega-Fires' (>100k acres) account for nearly 80% of all burned acreage in bad years.",
         keys: ["megaFires", "standardFires"],
         colors: ["#6a040f", "#e9c46a"],
@@ -352,6 +352,34 @@
             .attr("x", xPos)
             .attr("y", yPosArrowStart - 5)
             .text("Peak Year");
+        });
+      }
+      if (sceneId === "region") {
+        const peakYears = [2011];
+
+        peakYears.forEach(year => {
+          const dataItem = wildfireData.find(d => d.year === year);
+          if (!dataItem) return;
+
+          const xPos = xScale(year) + xScale.bandwidth() / 2;
+          const yPosBar = yScale(dataItem.acres);
+          const yPosArrowStart = yPosBar - 25; // Arrow starts 25px above bar
+
+          // Draw Arrowed Line pointing down to top of bar
+          annotationGroup.append("line")
+            .attr("class", "annotation-line")
+            .attr("x1", xPos)
+            .attr("y1", yPosArrowStart)
+            .attr("x2", xPos)
+            .attr("y2", yPosBar - 4) // Stop just above bar edge
+            .attr("marker-end", "url(#arrowhead)");
+
+          // Text label above arrow
+          annotationGroup.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", xPos)
+            .attr("y", yPosArrowStart - 5)
+            .text("Like here!");
         });
       }
     }
