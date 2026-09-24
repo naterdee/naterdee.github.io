@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="1b1676ce0380ca5fc369.scss">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <title>MP 1</title>
+</head>
+
+
+<body>
+<div class="navbar">
+  <a class="name" href="#top">Nate Dower</a>
+  <div class="rightnav">
+    <a class="buttons" href="#top">Home</a>
+    <a class="buttons" href="#projects">Projects</a>
+    <a class="buttons" href="#showcase">Showcase</a>
+    <a class="buttons" href="#contact">Contact</a>
+  </div>
+</div>
+
+<div id="top" class="top"> 
+  <div class="section-inner hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">CS 409 / Interactive portfolio</p>
+      <h1>Hi! I'm Nate</h1>
+      <p class="hero-summary">Here's a bit about who I am and what I do.</p>
+    </div>
+
+    <div class="slideshow-container" aria-label="Project image carousel">
+
+      <div class="mySlides fade">
+        <img src="52584be3fbb4fcffe30d.jpeg" alt="A red fire hydrant">
+        <div class="caption">I'm a bit of a fiend for milk tea...</div>
+      </div>
+
+      <div class="mySlides fade">
+        <img src="ff21a0a063c65256a35b.jpeg" alt="A ceramic plate">
+        <div class="caption">I love traveling, having gone to 30+ states and 10+ countries.</div>
+      </div>
+
+      <div class="mySlides fade">
+        <img src="91167a54dfcbaa34d8db.jpeg" alt="A second view of a ceramic plate">
+        <div class="caption">And I'm a Junior at UIUC studying Computer Science!</div>
+      </div>
+
+      <button class="prev" aria-label="Previous slide"><i class="fa-solid fa-arrow-left"></i></button>
+      <button class="next" aria-label="Next slide"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<div id="projects" class="projects"> 
+  <div class="section-inner">
+    <h2>Recent Projects</h2>
+    <div class="project-grid">
+      <article class="project-card">
+        <i class="fa-solid fa-dungeon project-icon" aria-hidden="true"></i>
+        <h3>Dungeon Game</h3>
+        <button class="modal-trigger" type="button" data-title="Dungeon Game" data-description="A text-based dungeon crawler with minigames, built collaboratively in Python. The project focused on clear game states, simple interactions, and teamwork." data-link="https://github.com/CS196Illinois/FA24-Group24" data-link-text="View the project"><span>View details</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      </article>
+      <article class="project-card">
+        <i class="fa-solid fa-brain project-icon" aria-hidden="true"></i>
+        <h3>Neural Networks</h3>
+        <button class="modal-trigger" type="button" data-title="Neural Networks" data-description="Exploring the fundamentals of neural networks and their applications in machine learning in Python." data-link="https://github.com/naterdee/final-project361" data-link-text="View the code"><span>View details</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      </article>
+      <article class="project-card">
+        <i class="fa-solid fa-street-view project-icon" aria-hidden="true"></i>
+        <h3>Street View Images</h3>
+        <button class="modal-trigger" type="button" data-title="Street View Images" data-description="A project exploring the use of KartaView images to create 2D street view render in Python." data-link="https://gitlab.com/jng8893/cs445-final-project" data-link-text="View the code"><span>View details</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      </article>
+    </div>
+  </div>
+</div>
+
+<div id="showcase" class="showcase">
+  <div class="section-inner showcase-inner">
+    <div>
+      <h2>Tetris in Haskell</h2>
+      <p>A fun project built with Codeworld to test my understanding of functional programming.</p>
+      <p><a href="https://code.world/haskell#Pc0izLcV8Wv3H5_eeFV5WkQ" target="_blank" rel="noreferrer">Check it out here <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="sr-only"> (opens in a new tab)</span></a></p>
+    </div>
+    <video class="showcase-video" controls preload="metadata">
+      <source src="18b056b26072c47ea508.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+</div>
+<div id="contact" class="contact"> 
+  
+  <div class="section-inner">
+    <h2>Let's get in contact!</h2>
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:naterdee6@gmail.com"><i class="fa-solid fa-envelope"></i><span>Email</span><small>naterdee6@gmail.com</small></a>
+      <a class="contact-link" href="https://www.linkedin.com/in/ndower/" target="_blank" rel="noreferrer"><i class="fa-brands fa-linkedin"></i><span>LinkedIn</span><small>Nathanael Dower</small></a>
+      <a class="contact-link" href="https://www.instagram.com/natesipstea/" target="_blank" rel="noreferrer"><i class="fa-brands fa-instagram"></i><span>Instagram</span><small>@natesipstea</small></a>
+    </div>
+  </div>
+</div>
+
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" aria-label="Close project note"><i class="fa-solid fa-xmark"></i></button>
+    <p class="eyebrow">Project details</p>
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <a id="modal-link" class="modal-link" href="#" target="_blank" rel="noreferrer"></a>
+  </div>
+</div>
+  <script src="2f6f1cddf39952e19883.js" defer></script>
+<script defer src="bundle.js"></script></body>
+</html>
